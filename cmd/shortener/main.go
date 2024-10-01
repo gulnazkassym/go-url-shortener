@@ -67,6 +67,7 @@ func postHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	response := "http://localhost:8080/" + urlStore[originalURL]
 	w.Header().Set("Content-Type", "text/plain")
+	w.WriteHeader(http.StatusCreated)
 	w.Write([]byte(response))
 }
 
@@ -77,8 +78,8 @@ func getHandler(w http.ResponseWriter, r *http.Request) {
 	defer mu.Unlock()
 	for originalURL, shortenedID := range urlStore {
 		if shortenedID == id {
-			w.Header().Set("Content-Type", "text/plain")
-			w.Write([]byte(originalURL))
+			w.WriteHeader(http.StatusTemporaryRedirect)
+			w.Header().Set("Location", originalURL)
 			return
 		}
 	}
