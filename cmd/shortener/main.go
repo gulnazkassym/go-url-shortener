@@ -3,10 +3,8 @@ package main
 import (
 	"fmt"
 	"io"
-	"math/rand"
 	"net/http"
 	"sync"
-	"time"
 )
 
 var (
@@ -35,24 +33,25 @@ func run() error {
 	mux := http.NewServeMux()
 
 	mux.HandleFunc("/", postHandler)
-	mux.HandleFunc("/{id}", getHandler)
+	// mux.HandleFunc("/{id}", getHandler) // try to pass an argument
+	mux.HandleFunc("/hevfyegruf", getHandler) // try to pass an argument
 	fmt.Println("Server started at http://localhost:8080")
 
 	return http.ListenAndServe(`:8080`, mux)
 }
 
-func shortenURL() string {
-	const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
-	seed := rand.NewSource(time.Now().UnixNano())
-	random := rand.New(seed)
+// func shortenURL() string {
+// 	const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+// 	seed := rand.NewSource(time.Now().UnixNano())
+// 	random := rand.New(seed)
 
-	result := make([]byte, 8)
-	for i := range result {
-		result[i] = charset[random.Intn(len(charset))]
-	}
+// 	result := make([]byte, 8)
+// 	for i := range result {
+// 		result[i] = charset[random.Intn(len(charset))]
+// 	}
 
-	return string(result)
-}
+// 	return string(result)
+// }
 
 func postHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
@@ -84,16 +83,17 @@ func postHandler(w http.ResponseWriter, r *http.Request) {
 	// w.Header().Set("Content-Type", "text/plain")
 	// w.WriteHeader(http.StatusCreated)
 	// w.Write([]byte(response))
-	response := fmt.Sprintf("http://localhost:8080/%s", shortenURL()) // "http://localhost:8080/123"
-	urlStore[shortenURL()] = originalURL                              // { 123 => https://practicum.yandex.ru/ }
+
+	shortenStr := "hevfyegruf"
+	response := fmt.Sprintf("http://localhost:8080/%s", shortenStr) // "http://localhost:8080/123"
+	urlStore[shortenStr] = originalURL                              // { 123 => https://practicum.yandex.ru/ }
 
 	w.WriteHeader(http.StatusCreated)
 	w.Write([]byte(response))
 }
 
 func getHandler(w http.ResponseWriter, r *http.Request) {
-	// id := r.URL.Path[len("/"):]
-	id := r.URL.Path
+	id := r.URL.Path[len("/"):]
 
 	mu.Lock()
 	defer mu.Unlock()
@@ -107,6 +107,7 @@ func getHandler(w http.ResponseWriter, r *http.Request) {
 	// }
 
 	// http.Error(w, "Shortened URL not found", http.StatusNotFound)
+	fmt.Println(urlStore)
 	originalURL, exists := urlStore[id]
 	if !exists {
 		http.NotFound(w, r)
