@@ -5,6 +5,8 @@ import (
 	"io"
 	"net/http"
 	"sync"
+
+	"github.com/go-chi/chi"
 )
 
 var (
@@ -19,13 +21,14 @@ func main() {
 }
 
 func run() error {
-	mux := http.NewServeMux()
+	r := chi.NewRouter()
 
-	mux.HandleFunc("/", postHandler)
-	mux.HandleFunc("/hevfyegruf", getHandler)
+	r.Post("/", postHandler)
+	r.Get("/hevfyegruf", getHandler)
+
 	fmt.Println("Server started at http://localhost:8080")
 
-	return http.ListenAndServe(`:8080`, mux)
+	return http.ListenAndServe(`:8080`, r)
 }
 
 func postHandler(w http.ResponseWriter, r *http.Request) {
