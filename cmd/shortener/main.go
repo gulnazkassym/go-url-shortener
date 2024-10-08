@@ -15,6 +15,8 @@ var (
 )
 
 func main() {
+	parseFlags()
+
 	if err := run(); err != nil {
 		panic(err)
 	}
@@ -26,9 +28,9 @@ func run() error {
 	r.Post("/", postHandler)
 	r.Get("/hevfyegruf", getHandler)
 
-	fmt.Println("Server started at http://localhost:8080")
+	fmt.Println("Server started at", flagRunAddr)
 
-	return http.ListenAndServe(`:8080`, r)
+	return http.ListenAndServe(flagRunAddr, r)
 }
 
 func postHandler(w http.ResponseWriter, r *http.Request) {
