@@ -70,11 +70,12 @@ func getHandler(w http.ResponseWriter, r *http.Request) {
 	mu.Lock()
 	defer mu.Unlock()
 
-	originalURL, exists := urlStore[id]
-	if !exists {
-		http.NotFound(w, r)
-		return
-	}
+	// originalURL, exists := urlStore[id]
+	// if !exists {
+	// 	http.NotFound(w, r)
+	// 	return
+	// }
+	originalURL := urlStore[id]
 
 	http.Redirect(w, r, originalURL, http.StatusTemporaryRedirect)
 }
